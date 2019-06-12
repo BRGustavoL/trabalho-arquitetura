@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Gerenciador de Memória Cache</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-light bg-light">
+        <span class="navbar-brand mb-0 h1">Gerenciador de Memória Cache</span>
+    </nav>
+
+    <div class="container">
+
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <h5>Dados</h5>
+                <br>
+                <h6>Endereço</h6>
+                <input id="endereco" type="text" class="form-control" aria-label="Sizing example input"
+                    aria-describedby="inputGroup-sizing-default">
+                <br>
+                <h6>Valor</h6>
+                <input id="valor" type="text" class="form-control" aria-label="Sizing example input"
+                    aria-describedby="inputGroup-sizing-default">
+                <br>
+                <button onclick="funcaoler()" type="button" class="btn btn-dark">Ler</button>
+                <button onclick="funcaoescrever()" type="button" class="btn btn-dark">Escrever</button>
+            </div>
+        </div>
+
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <h5>Memória Cache</h5>
+                <br>
+                <table id="tabelaMemCache" class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Rótulo</th>
+                            <th scope="col">Quadro</th>
+                            <th scope="col">Célula 00</th>
+                            <th scope="col">Célula 01</th>
+                            <th scope="col">Célula 10</th>
+                            <th scope="col">Célula 11</th>
+                            <th scope="col">Válido</th>
+                        </tr>
+
+                        <!-- </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td>Jacob</td>
+                        <td>Thornton</td>
+                        <td>@fat</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">3</th>
+                        <td>Larry</td>
+                        <td>the Bird</td>
+                        <td>@twitter</td>
+                    </tr>
+                    </tbody> -->
+                </table>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <h5>Memória Principal</h5>
+                <br>
+                <table id="tabelaMemPrincipal" class="table">
+                    <tr>
+                        <th scope="col">Endereço</th>
+                        <th scope="col">Bloco</th>
+                        <th scope="col">Dado</th>
+                        
+                    </tr>
+
+                    <!-- <thead>
+                    <tr>
+                        <th scope="col">Endereço</th>
+                        <th scope="col">Bloco</th>
+                        <th scope="col">Dado</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr id="endereco_tr">
+
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td>Jacob</td>
+                        <td>Thornton</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">3</th>
+                        <td>Larry</td>
+                        <td>the Bird</td>
+                    </tr>
+                    </tbody> -->
+                </table>
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <script>
+        /************************AJUDA***********************/
+        /* Resumo Array Bidimensional
+          var memoriaprincipal = new Array();
+          memoriaprincipal[1] = new Array ("Banana","Maça","Pêra");
+          alert(memoriaprincipal[1][2]);
+          for(i=0; i<array.length; i++)
+          {
+              for(j=0;j<array[i].length; j++)
+              {
+                  alert(array[i][j]);
+              }
+          }
+        */
+        /* Decimal para Binario
+        var decimal = 2015;
+        var binario = decimal.toString(2);
+        alert(binario);
+        */
+        /* Binario para Decimal
+        var binario = 11111011111;
+        var decimal = parseInt(binario, 2);
+        alert(decimal);
+        */
+        bloco = 0;
+
+
+
+        //Função para colocar zeros à esquerda do endereço
+        function pad(str, length) {
+            const resto = length - String(str).length;
+            return '0'.repeat(resto > 0 ? resto : '0') + str;
+        }
+
+        /*************CRIAÇÃO DA MEMÓRIA PRINCIPAL*************/
+        /*MEMÓRIA PRINCIPAL
+        ENDEREÇO | BLOCO | DADO*/
+        var memoriaprincipal = new Array(1024);
+        var memoriacache = new Array(16);
+        var registradores = new Array(4);
+
+        //Colocando os endereços
+        for (i = 0; i < memoriaprincipal.length; i++) {
+            var binario = i.toString(2);
+            var resultado = pad(binario, 10);
+            memoriaprincipal[i] = new Array(5);
+            memoriaprincipal[i][0] = resultado;
+        }
+
+        //Colocando os Blocos e Dados
+        for (i = 0; i < 1024; i = i + 4) {
+            memoriaprincipal[i][1] = bloco;
+            memoriaprincipal[i + 1][1] = bloco;
+            memoriaprincipal[i + 2][1] = bloco;
+            memoriaprincipal[i + 3][1] = bloco;
+
+            memoriaprincipal[i][2] = Math.random().toString(36).substring(7).slice(0, 1);
+            memoriaprincipal[i + 1][2] = Math.random().toString(36).substring(7).slice(0, 1);
+            memoriaprincipal[i + 2][2] = Math.random().toString(36).substring(7).slice(0, 1);
+            memoriaprincipal[i + 3][2] = Math.random().toString(36).substring(7).slice(0, 1);
+
+            bloco = bloco + 1;
+        }
+
+        for (let i = 0; i < memoriaprincipal.length; i++) {
+            
+            tabelaMemPrincipal.innerHTML +=
+                `
+            <tr>
+                <td id="endereco${i}">${memoriaprincipal[i][0]}</td>
+                <td id="bloco${i}">${memoriaprincipal[i][1]}</td>
+                <td id="valor${i}">${memoriaprincipal[i][2]}</td>
+            </tr>
+        `
+        }
+
+        /*************CRIAÇÃO DA MEMÓRIA CACHE**************/
+        /*MEMÓRIA CACHE
+        ENDEREÇO | CÉLULA 0 | CÉLULA 1 | CÉLULA 2 | CÉLULA 3 */
+        for (i = 0; i < memoriacache.length; i++) {
+            var binario = i.toString(2);
+            var resultado = pad(binario, 4);
+            memoriacache[i] = new Array(7);
+            memoriacache[i][0] = resultado;
+            memoriacache[i][6] = 0;
+        }
+
+        for (let i = 0; i < memoriacache.length; i++) {
+
+            tabelaMemCache.innerHTML +=
+                `
+            <tr>
+                <td></td>
+                <td>${memoriacache[i][0]}</td>
+                <td id="valor1cache${i}"></td>
+                <td id="valor2cache${i}"></td>
+                <td id="valor3cache${i}"></td>
+                <td id="valor4cache${i}"></td>
+                <td>${memoriacache[i][6]}</td>   
+            </tr>
+        `
+        }
+
+
+        /*******************Lógica Escrever********************/
+
+        function funcaoescrever() 
+        {
+            const auxiliar = document.querySelector('#endereco');
+            const endereco = auxiliar.value;
+            const auxiliar1 = document.querySelector('#valor');
+            const valor = auxiliar1.value;
+            var aux = 0;
+
+            const ultimos4 = endereco.slice(6, 10);
+
+            for(let i = 0; i < memoriaprincipal.length; i++) 
+            {
+
+                if(memoriaprincipal[i][0]==endereco)
+                {
+
+                    memoriaprincipal[i][2]=valor;
+
+                    document.getElementById("valor"+i).innerHTML = valor;
+
+                    numerodobloco = memoriaprincipal[i][1];
+
+                    for(let i = 0; i < memoriaprincipal.length; i++)
+                    {
+                        if(memoriaprincipal[i][1]==numerodobloco)
+                        {
+                            registradores[aux]=memoriaprincipal[i][2];
+                            aux = aux + 1;
+                        }
+                    }                    
+                }
+            }
+
+            inserirnacache(ultimos4);
+
+        }
+
+        function inserirnacache(ultimos4)
+        {
+
+            for(i=0; i<memoriacache.length; i++)
+            {
+                if(ultimos4==memoriacache[i][0])
+                {
+                    document.getElementById("valor1cache"+i).innerHTML = registradores[0];
+                    document.getElementById("valor2cache"+i).innerHTML = registradores[1];
+                    document.getElementById("valor3cache"+i).innerHTML = registradores[2];
+                    document.getElementById("valor4cache"+i).innerHTML = registradores[3];
+                }
+            }
+        }
+
+        /*******************Lógica Ler********************/
+
+        function funcaoler()
+        {
+
+            const auxiliar = document.querySelector('#endereco');
+            const endereco = auxiliar.value;
+
+            for(let i=0; i<memoriaprincipal.length; i++) 
+            {
+
+                if(memoriaprincipal[i][0]==endereco)
+                {
+
+                    valor=memoriaprincipal[i][2];
+                    document.getElementById("valor").value = valor;
+                    funcaoescrever();
+                 
+                }
+            }
+        }
+        
+
+    </script>
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
