@@ -147,8 +147,16 @@
         alert(decimal);
         */
         bloco = 0;
-
-
+        
+        nacessos = 0;
+        nacertos = 0;
+        nfaltas = 0;
+        nleituras = 0;
+        nescritas = 0;
+        nacertosnaleitura = 0;
+        nacertosnaescrita = 0;
+        nfaltasnaleitura = 0;
+        nfaltasnaescrita = 0;
 
         //Função para colocar zeros à esquerda do endereço
         function pad(str, length) {
@@ -214,13 +222,13 @@
             tabelaMemCache.innerHTML +=
                 `
             <tr>
-                <td></td>
+                <td id=rotulocache${i}></td>
                 <td>${memoriacache[i][0]}</td>
                 <td id="valor1cache${i}"></td>
                 <td id="valor2cache${i}"></td>
                 <td id="valor3cache${i}"></td>
                 <td id="valor4cache${i}"></td>
-                <td>${memoriacache[i][6]}</td>   
+                <td id="validocache${i}">${memoriacache[i][6]}</td>   
             </tr>
         `
         }
@@ -230,6 +238,7 @@
 
         function funcaoescrever() 
         {
+            
             const auxiliar = document.querySelector('#endereco');
             const endereco = auxiliar.value;
             const auxiliar1 = document.querySelector('#valor');
@@ -237,6 +246,7 @@
             var aux = 0;
 
             const ultimos4 = endereco.slice(6, 10);
+            const primeiros6 = endereco.slice(0, 6);
 
             for(let i = 0; i < memoriaprincipal.length; i++) 
             {
@@ -261,21 +271,23 @@
                 }
             }
 
-            inserirnacache(ultimos4);
+            inserirnacache(primeiros6, ultimos4);
 
         }
 
-        function inserirnacache(ultimos4)
+        function inserirnacache(primeiros6, ultimos4)
         {
 
             for(i=0; i<memoriacache.length; i++)
             {
                 if(ultimos4==memoriacache[i][0])
                 {
+                    document.getElementById("rotulocache"+i).innerHTML = primeiros6;
                     document.getElementById("valor1cache"+i).innerHTML = registradores[0];
                     document.getElementById("valor2cache"+i).innerHTML = registradores[1];
                     document.getElementById("valor3cache"+i).innerHTML = registradores[2];
                     document.getElementById("valor4cache"+i).innerHTML = registradores[3];
+                    document.getElementById("validocache"+i).innerHTML = 1;
                 }
             }
         }
@@ -304,8 +316,6 @@
         
 
     </script>
-
-
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
