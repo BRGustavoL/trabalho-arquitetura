@@ -2,15 +2,15 @@
 <html lang="en">
 
 <head>
-    <!-- Required meta tags -->
+    
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
     <title>Gerenciador de Memória Cache</title>
+
 </head>
 
 <body>
@@ -21,6 +21,7 @@
     <div class="container">
 
         <br>
+
         <div class="card">
             <div class="card-body">
                 <h5>Dados</h5>
@@ -54,28 +55,6 @@
                             <th scope="col">Célula 11</th>
                             <th scope="col">Válido</th>
                         </tr>
-
-                        <!-- </thead>
-                    <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>Larry</td>
-                        <td>the Bird</td>
-                        <td>@twitter</td>
-                    </tr>
-                    </tbody> -->
                 </table>
             </div>
         </div>
@@ -91,63 +70,15 @@
                         <th scope="col">Dado</th>
                         
                     </tr>
-
-                    <!-- <thead>
-                    <tr>
-                        <th scope="col">Endereço</th>
-                        <th scope="col">Bloco</th>
-                        <th scope="col">Dado</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr id="endereco_tr">
-
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>Larry</td>
-                        <td>the Bird</td>
-                    </tr>
-                    </tbody> -->
                 </table>
             </div>
         </div>
-
-
-
     </div>
 
     <script>
-        /************************AJUDA***********************/
-        /* Resumo Array Bidimensional
-          var memoriaprincipal = new Array();
-          memoriaprincipal[1] = new Array ("Banana","Maça","Pêra");
-          alert(memoriaprincipal[1][2]);
-          for(i=0; i<array.length; i++)
-          {
-              for(j=0;j<array[i].length; j++)
-              {
-                  alert(array[i][j]);
-              }
-          }
-        */
-        /* Decimal para Binario
-        var decimal = 2015;
-        var binario = decimal.toString(2);
-        alert(binario);
-        */
-        /* Binario para Decimal
-        var binario = 11111011111;
-        var decimal = parseInt(binario, 2);
-        alert(decimal);
-        */
-        bloco = 0;
         
+        //Variáveis Necessárias
+        bloco = 0;
         nacessos = 0;
         nacertos = 0;
         nfaltas = 0;
@@ -157,21 +88,22 @@
         nacertosnaescrita = 0;
         nfaltasnaleitura = 0;
         nfaltasnaescrita = 0;
+        auxiliarescrita = 0;
 
         //Função para colocar zeros à esquerda do endereço
         function pad(str, length) {
             const resto = length - String(str).length;
             return '0'.repeat(resto > 0 ? resto : '0') + str;
         }
-
-        /*************CRIAÇÃO DA MEMÓRIA PRINCIPAL*************/
-        /*MEMÓRIA PRINCIPAL
-        ENDEREÇO | BLOCO | DADO*/
+        
+        //Criação dos Vetores de Memória Principal, Memória Cache e Registradores
         var memoriaprincipal = new Array(1024);
         var memoriacache = new Array(16);
         var registradores = new Array(4);
 
-        //Colocando os endereços
+        /*************CRIAÇÃO DA MEMÓRIA PRINCIPAL*************/
+
+        //Colocando os Endereços
         for (i = 0; i < memoriaprincipal.length; i++) {
             var binario = i.toString(2);
             var resultado = pad(binario, 10);
@@ -194,6 +126,8 @@
             bloco = bloco + 1;
         }
 
+        //Preenchendo a Tabela HTML da Memória Principal com os valores
+
         for (let i = 0; i < memoriaprincipal.length; i++) {
             
             tabelaMemPrincipal.innerHTML +=
@@ -207,8 +141,8 @@
         }
 
         /*************CRIAÇÃO DA MEMÓRIA CACHE**************/
-        /*MEMÓRIA CACHE
-        ENDEREÇO | CÉLULA 0 | CÉLULA 1 | CÉLULA 2 | CÉLULA 3 */
+        
+        //Colocando os Números dos Quadros no vetor
         for (i = 0; i < memoriacache.length; i++) {
             var binario = i.toString(2);
             var resultado = pad(binario, 4);
@@ -217,6 +151,7 @@
             memoriacache[i][6] = 0;
         }
 
+        //Preenchendo a Tabela HTML da Memória Cache com os valores
         for (let i = 0; i < memoriacache.length; i++) {
 
             tabelaMemCache.innerHTML +=
@@ -233,12 +168,12 @@
         `
         }
 
-
         /*******************Lógica Escrever********************/
 
         function funcaoescrever() 
         {
-            
+
+
             const auxiliar = document.querySelector('#endereco');
             const endereco = auxiliar.value;
             const auxiliar1 = document.querySelector('#valor');
@@ -247,6 +182,46 @@
 
             const ultimos4 = endereco.slice(6, 10);
             const primeiros6 = endereco.slice(0, 6);
+
+            nacessos = nacessos + 1;
+
+            //Estatísticas Escrita
+            for (i = 0; i < memoriacache.length; i++) 
+            {
+
+                var rotulo = document.getElementById("rotulocache"+i).innerText;
+                var valor1 = document.getElementById("valor1cache"+i).innerText;
+                var valor2 = document.getElementById("valor2cache"+i).innerText;
+                var valor3 = document.getElementById("valor3cache"+i).innerText;
+                var valor4 = document.getElementById("valor4cache"+i).innerText;
+                
+                var concatenado = rotulo+memoriacache[i][0];
+
+                if(endereco==concatenado)
+                {
+                    if((valor==valor1)||(valor==valor2)||(valor==valor3)||(valor==valor4))
+                    {
+                        nacertosnaescrita = nacertosnaescrita + 1;
+                        nacertos = nacertos + 1;
+                        break;
+                    }
+                }
+
+                else
+                {
+                    if(i==15)
+                    {
+                        nfaltasnaescrita = nfaltasnaescrita + 1;
+                        nfaltas = nfaltas + 1;
+                    }
+                    
+                }
+
+            }
+            
+
+            //Escrevendo na Memória Cache
+
 
             for(let i = 0; i < memoriaprincipal.length; i++) 
             {
@@ -278,6 +253,8 @@
         function inserirnacache(primeiros6, ultimos4)
         {
 
+            nescritas = nescritas + 1;
+
             for(i=0; i<memoriacache.length; i++)
             {
                 if(ultimos4==memoriacache[i][0])
@@ -290,16 +267,54 @@
                     document.getElementById("validocache"+i).innerHTML = 1;
                 }
             }
+
+            printvalores();
         }
 
         /*******************Lógica Ler********************/
 
         function funcaoler()
         {
-
             const auxiliar = document.querySelector('#endereco');
             const endereco = auxiliar.value;
+            var aux = 0;
 
+            nacessos = nacessos + 1;
+            nleituras = nleituras + 1;
+
+            //Estatísticas Leitura
+            for (i = 0; i < memoriacache.length; i++) 
+            {
+
+                var rotulo = document.getElementById("rotulocache"+i).innerText;
+                var valor1 = document.getElementById("valor1cache"+i).innerText;
+                var valor2 = document.getElementById("valor2cache"+i).innerText;
+                var valor3 = document.getElementById("valor3cache"+i).innerText;
+                var valor4 = document.getElementById("valor4cache"+i).innerText;
+                var concatenado = (rotulo+memoriacache[i][0]);
+
+                if(endereco==concatenado)
+                {
+
+                        nacertosnaleitura = nacertosnaleitura + 1;
+                        nacertos = nacertos + 1;
+                        auxiliarescrita = 1;
+                        break;
+
+                }
+
+                else
+                {
+                    if(i==15)
+                    {
+                        nfaltasnaleitura = nfaltasnaleitura + 1;
+                        nfaltas = nfaltas + 1;
+                    }
+                }
+
+            }
+
+            //Lendo da Memória
             for(let i=0; i<memoriaprincipal.length; i++) 
             {
 
@@ -308,13 +323,59 @@
 
                     valor=memoriaprincipal[i][2];
                     document.getElementById("valor").value = valor;
-                    funcaoescrever();
                  
                 }
             }
+
+            if(auxiliarescrita==1)
+            {
+                printvalores();
+            }
+
+            if(auxiliarescrita!=1)
+            {
+
+            const ultimos4 = endereco.slice(6, 10);
+            const primeiros6 = endereco.slice(0, 6);
+
+            for(let i = 0; i < memoriaprincipal.length; i++) 
+            {
+
+                if(memoriaprincipal[i][0]==endereco)
+                {
+
+                    numerodobloco = memoriaprincipal[i][1];
+
+                    for(let i = 0; i < memoriaprincipal.length; i++)
+                    {
+                        if(memoriaprincipal[i][1]==numerodobloco)
+                        {
+                            registradores[aux]=memoriaprincipal[i][2];
+                            aux = aux + 1;
+                        }
+                    }                    
+                }
+            }
+
+            inserirnacache(primeiros6, ultimos4);
+
+            }
+            
+        }
+
+        function printvalores()
+        {
+            console.log(nacessos);
+            console.log(nacertos);
+            console.log(nfaltas);
+            console.log(nleituras);
+            console.log(nescritas);
+            console.log(nacertosnaleitura);
+            console.log(nacertosnaescrita);
+            console.log(nfaltasnaleitura);
+            console.log(nfaltasnaescrita);
         }
         
-
     </script>
 
     <!-- Optional JavaScript -->
